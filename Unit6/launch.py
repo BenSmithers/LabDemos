@@ -7,7 +7,7 @@ from numpy import log10
 from math import sqrt
 
 
-from MultiHex.tools import clicker_control, basic_tool 
+from tools import clicker_control, basic_tool 
 class Hand(basic_tool):    
     def __init__(self, parent=None):
         basic_tool.__init__(self, parent)
