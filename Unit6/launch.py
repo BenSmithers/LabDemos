@@ -71,7 +71,7 @@ class Hand(basic_tool):
             self.draw( self.selected )
             return
         else:
-            where = get_under_here(event)
+            where = self.get_under_here(event)
             self.parent.remove( where )
             self.draw( where )
 
@@ -83,6 +83,7 @@ class Hand(basic_tool):
 
         if which in self.drawn:
             self.parent.scene.removeItem( self.drawn[which] )
+            del self.drawn[which]
         
         if which in self.parent.objects:
             obj = self.parent.objects[which]
@@ -158,6 +159,8 @@ class main_window(QMainWindow):
 
         if self.circle is not None: 
             self.scene.removeItem( self.circle )
+            self.circle = None 
+
         self.brush.setStyle(1)
         new_color = QtGui.QColor( 255*off/10., 255*(10-off)/10., 0, 100)
         self.brush.setColor( new_color )
@@ -165,6 +168,7 @@ class main_window(QMainWindow):
 
         if self.line is not None:
             self.scene.removeItem( self.line )
+            self.line = None
         
         these = [QtCore.QPointF(0., 0.), QtCore.QPointF( 0.5*torque[0]/self.scale, 0.5*torque[1]/self.scale)]
         self.brush.setStyle(1)
@@ -187,6 +191,7 @@ class main_window(QMainWindow):
 
     def remove(self, what):
         del self.objects[what]
+        self.update_circle()
 
     def update_gui(self):
         if self.hand.selected is None:
@@ -196,11 +201,11 @@ class main_window(QMainWindow):
         else:
             obj = self.objects[ self.hand.selected ]
             self.ui.x_spin.setValue( obj.x *2/self.scale)
-            self.ui.y_spin.setValue( obj.y *2/self.scale)
+            self.ui.y_spin.setValue( -obj.y *2/self.scale)
             self.ui.mass_spin.setValue( obj.mass )
 
     def add_object_but( self ):
-        new = Mass( self.ui.x_spin.value()*self.scale*0.5, self.ui.y_spin.value()*self.scale*0.5, self.ui.mass_spin.value())
+        new = Mass( self.ui.x_spin.value()*self.scale*0.5, -self.ui.y_spin.value()*self.scale*0.5, self.ui.mass_spin.value())
 
         where = self.register( new )
         self.hand.draw( where )
@@ -211,7 +216,7 @@ class main_window(QMainWindow):
         if self.hand.selected is not None:
             this = self.hand.selected
             self.objects[this].x_pos = self.ui.x_spin.value()*self.scale*0.5
-            self.objects[this].y_pos = self.ui.y_spin.value()*self.scale*0.5
+            self.objects[this].y_pos = -self.ui.y_spin.value()*self.scale*0.5
             self.objects[this].mass  = self.ui.mass_spin.value()
             self.objects[this].upd_points()
             self.hand.draw( this )
