@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from lab_ui import Ui_MainWindow as gui
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import QMainWindow, QWidget, QApplication
