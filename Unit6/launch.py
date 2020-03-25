@@ -10,7 +10,10 @@ from math import sqrt
 
 
 from tools import clicker_control, basic_tool 
-class Hand(basic_tool):    
+class Hand(basic_tool):
+    """
+    This is an object that the clicker_control sends its events to. It receives filtered input form the mouse, and manipulates objects and the GUI accordingly 
+    """
     def __init__(self, parent=None):
         basic_tool.__init__(self, parent)
 
@@ -28,6 +31,11 @@ class Hand(basic_tool):
         self.drawn = {}
     
     def get_under_here( self, event ):
+        """
+        Return the mass-id of whatever's at the event
+
+        Returns: int or Nonetype 
+        """
         loc_x = event.scenePos().x()
         loc_y = event.scenePos().y()
 
@@ -39,16 +47,31 @@ class Hand(basic_tool):
         
 
     def primary_mouse_depressed(self, event):
+        """
+        Called when the primary mouse button, the left button, is pressed
+
+        Basically just selects the mass under the a button, and updates the GUI to show the thing 
+        """
         what = self.get_under_here( event )
         self.selected = what
         self.parent.update_gui()
 
     def primary_mouse_released( self, event ):
+        """
+        Called when the primary mouse button, the left button, is released
+
+        Same as before. Gets what's under the mouse and updates the Gui to show the mass/position
+        """
         self.draw( self.selected )
         self.selected = self.get_under_here( event )
         self.parent.update_gui()
 
     def primary_mouse_held(self, event ):
+        """
+        Called when the primary mouse button is held
+
+        If a mass is currently selected, it moves the selected object to the mouse. This implements DRAGGING 
+        """
         if self.selected is None:
             return
 
@@ -62,6 +85,11 @@ class Hand(basic_tool):
         self.parent.update_circle()
 
     def secondary_mouse_released(self, event):
+        """
+        Called when the right-click is released
+
+        Deletes whatever is selected preferentially, or alternatively whatever's  under the mouse 
+        """
         if self.selected is not None:
             try:
                 self.parent.remove( self.selected )   
@@ -81,6 +109,9 @@ class Hand(basic_tool):
 
 
     def draw(self, which):
+        """
+        Redraws the specified object 
+        """
         self.brush.setColor( QtGui.QColor( 214,186,109 ))
         self.pen.setColor(QtGui.QColor( 173, 148, 80 ) )
 
@@ -96,6 +127,9 @@ class Hand(basic_tool):
 
 
 class Mass:
+    """
+    A datatype to represent the Masses on the screen
+    """
     def __init__(self, x_pos, y_pos, mass):
         self.x = x_pos
         self.y = y_pos
@@ -107,10 +141,15 @@ class Mass:
         self.upd_points()
 
     def upd_points(self):
+        """
+        Updates the coordinates of the little square
+        """
 
         self.size = 5+10*log10(self.mass)
 
         # make the points 
+        # I keep them in this type so that they are easier to draw. 
+        #    Drawing a QtPolygon takes a list of QtPoints. The F is for float 
         self.points = [ None for i in range(4) ]
         self.points[0]= QtCore.QPointF(self.x+0.5*self.size, self.y+0.5*self.size)     
         self.points[1]= QtCore.QPointF(self.x+0.5*self.size, self.y-0.5*self.size) 
@@ -118,6 +157,9 @@ class Mass:
         self.points[2]= QtCore.QPointF(self.x-0.5*self.size, self.y-0.5*self.size) 
 
 class main_window(QMainWindow):
+    """
+    Datatype for the application itself 
+    """
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
         self.ui = gui()
@@ -128,10 +170,11 @@ class main_window(QMainWindow):
         self.hand = Hand(self)
         self.scene._active = self.hand 
 
+        # connect the Screen to the clicker control 
         self.ui.graphicsView.setMouseTracking(True)
         self.ui.graphicsView.setScene( self.scene )
 
-        self.scale = 100.
+        self.scale = 100. # this is used as an overall scaling factor so that we are dealing in "inches" instead of pixels 
 
         self.objects = {}
 
@@ -151,6 +194,9 @@ class main_window(QMainWindow):
         self.ui.pushButton_2.clicked.connect( self.set_obj_but )
 
     def update_circle(self):
+        """
+        Updates the circle and the torque line. Redraws them both
+        """
         torque = [0., 0.]
 
         for mass_id in self.objects:
@@ -167,12 +213,15 @@ class main_window(QMainWindow):
         self.brush.setStyle(1)
         new_color = QtGui.QColor( 255*off/10., 255*(10-off)/10., 0, 100)
         self.brush.setColor( new_color )
+        # we need to use weird scaling things like this so the circle is drawn appropriately large compared to where things get placed 
+        # also so that the circle is placed centered at the origin 
         self.circle = self.scene.addEllipse( -5*self.scale,-5*self.scale, 10*self.scale, 10.*self.scale, pen=self.pen, brush=self.brush)
 
         if self.line is not None:
             self.scene.removeItem( self.line )
-            self.line = None
-        
+            self.line = None 
+
+        # the line 
         these = [QtCore.QPointF(0., 0.), QtCore.QPointF( 0.5*torque[0]/self.scale, 0.5*torque[1]/self.scale)]
         self.brush.setStyle(1)
 
@@ -182,6 +231,12 @@ class main_window(QMainWindow):
         self.line.setZValue(1)
 
     def register( self, new_obj ):
+        """
+        Adds a new mass to the registered list of masses 
+        Finds the smallest unasigned mass ID in this map of 
+        (int) -> Mass
+        and assigns it
+        """
         assert( isinstance( new_obj, Mass))
         
         where = 0 
@@ -193,10 +248,18 @@ class main_window(QMainWindow):
         return(where )
 
     def remove(self, what):
+        """
+        Removes the mass from our map
+
+        May raise KeyError 
+        """
         del self.objects[what]
         self.update_circle()
 
     def update_gui(self):
+        """
+        Updates the GUI according to the Hand's selection
+        """
         if self.hand.selected is None:
             self.ui.x_spin.setValue( 0 *2/self.scale)
             self.ui.y_spin.setValue( 0 *2/self.scale)
@@ -208,6 +271,11 @@ class main_window(QMainWindow):
             self.ui.mass_spin.setValue( obj.mass )
 
     def add_object_but( self ):
+        """
+        called when the "Place" button is pressed
+
+        Gets the current entries in the spin boxes and uses those to make a new mass 
+        """
         new = Mass( self.ui.x_spin.value()*self.scale*0.5, -self.ui.y_spin.value()*self.scale*0.5, self.ui.mass_spin.value())
 
         where = self.register( new )
@@ -216,6 +284,11 @@ class main_window(QMainWindow):
         self.update_circle()
 
     def set_obj_but( self ):
+        """
+        Called when the "set" button is pressed
+
+        Uses the values of the spin boxes to set the Hand's selection to new values 
+        """
         if self.hand.selected is not None:
             this = self.hand.selected
             self.objects[this].x_pos = self.ui.x_spin.value()*self.scale*0.5
@@ -225,9 +298,10 @@ class main_window(QMainWindow):
             self.hand.draw( this )
             self.update_circle()
 
+
+# create an instance of the application and launch it 
 app = QApplication(sys.argv)
 app_instance = main_window()
-
 
 if __name__=="__main__":
     app_instance.show()
