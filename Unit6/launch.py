@@ -72,8 +72,11 @@ class Hand(basic_tool):
             return
         else:
             where = self.get_under_here(event)
-            self.parent.remove( where )
-            self.draw( where )
+            if where is None:
+                return
+            else:
+                self.parent.remove( where )
+                self.draw( where )
 
 
 

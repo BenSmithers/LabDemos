@@ -75,9 +75,9 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.label.setText(_translate("MainWindow", "X Coord"))
-        self.label_2.setText(_translate("MainWindow", "Y Coord"))
-        self.label_3.setText(_translate("MainWindow", "Mass"))
+        self.label.setText(_translate("MainWindow", "X Coord (in)"))
+        self.label_2.setText(_translate("MainWindow", "Y Coord (in)"))
+        self.label_3.setText(_translate("MainWindow", "Mass (gm)"))
         self.pushButton_3.setText(_translate("MainWindow", "Place New"))
         self.pushButton_2.setText(_translate("MainWindow", " Set"))
 
