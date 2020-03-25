@@ -47,6 +47,7 @@ This is a lot harder to do. There are a few options
 
 Launch file using `python launch.py` or `./launch.py`
 
+ - You can use square brackets '[' and ']' to zoom in and out, respectively 
  - The circle is 10 inches in radius
  - You can add masses by clicking the "place new button." They are created at the coordinates shown and with the mass shown. 
  - You can move the masses around by clicking and dragging

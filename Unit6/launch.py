@@ -64,11 +64,11 @@ class Hand(basic_tool):
     def secondary_mouse_released(self, event):
         if self.selected is not None:
             try:
-                self.parent.remove( self.selected )    
+                self.parent.remove( self.selected )   
             except KeyError:
                 pass
-        
             self.draw( self.selected )
+            self.selected = None
             return
         else:
             where = self.get_under_here(event)
