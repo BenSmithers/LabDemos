@@ -12,6 +12,37 @@ This is a little demo to play around with torque and rotational equilibrium
 
 These should be easy to download with your package manager 
 
+## Installing Dependencies
+
+### Linux 
+
+You can just use the pre-installed package manager (`apt`), and installing the dependencies should be as easy as opening a command terminal (Ctrl + Alt + T)
+```
+sudo apt-get install git python3 python3-numpy python3-pyqt5 
+```
+then it should ask you for your password, ask for approval, and install these things. Then go to a directory of your choice and run 
+```
+git clone git@github.com:BenSmithers/LabDemos.git
+```
+Then change directories `cd LabDemos/Unit6` into the Unit 6 folder, and follow the instructions below! 
+
+### Mac OSX 
+
+I haven't done this myself, but there's a guide [here](https://docs.python-guide.org/starting/install3/osx/) for installing python 3 and "brew" on Mac computers. Then you _should_ be able to just do
+```
+brew install pyqt5 git
+pip3 install numpy 
+```
+I'm not sure if this will install it for python2 or python3 though. So take care! But from here, you should be able to follow the steps outlined in the Linux part from the git cloning onwards.
+
+### Windows
+
+This is a lot harder to do. There are a few options
+1. Get an IDE like Enthought Canopy or Microsoft Visual Studio
+2. Use that, or git bash, to clone this repository. Or you can just download it manually. 
+3. Use whichever IDE you have from (1) to download the appropriate packages
+4. Run `launch.py`
+
 ## Instructions: 
 
 Launch file using `python launch.py` or `./launch.py`
