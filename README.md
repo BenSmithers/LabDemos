@@ -1,9 +1,7 @@
 # LabDemos
 A few python scripts to use as deoms in UTA's labs
 
-# Unit 6: Rotational Equilibrium 
-
-This is a little demo to play around with torque and rotational equilibrium
+# Installing 
 
 ## Requirements:
  - Python 3
@@ -43,6 +41,10 @@ This is a lot harder to do. There are a few options
 3. Use whichever IDE you have from (1) to download the appropriate packages
 4. Run `launch.py`
 
+# Unit 6: Rotational Equilibrium 
+
+This is a little demo to play around with torque and rotational equilibrium
+
 ## Instructions: 
 
 Launch file using `python launch.py` or `./launch.py`
@@ -56,3 +58,17 @@ Launch file using `python launch.py` or `./launch.py`
  - An arrow is drawn representing the current net torque on the system. 
 
 Try follow along the lab manual's instructions! 
+
+# Unit 8: Archimede's Principle
+
+Demo showing measured force felt by force-meter due to suspended masses. Watch as the force shrinks, as you dip them in the water, due to the action of the buoyant force on the masses! 
+
+## Instructions: 
+
+Launch file using `python launch.py` or `./launch.py`
+
+ - You can use square brackets '[' and ']' to zoom in and out, respectively 
+ - Click and drag the top of the masses to move them around 
+ - There are four masses: three cylinders (blue, black, orange), and one irregularly shaped mass. 
+ - Use the force-meter to see the apparent weight of the suspended mass
+ - use the drop-down menu on the right to change the fluid in the cup
