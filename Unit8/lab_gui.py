@@ -39,6 +39,7 @@ class Ui_MainWindow(object):
         self.fluid_box.setObjectName("fluid_box")
         self.fluid_box.addItem("")
         self.fluid_box.addItem("")
+        self.fluid_box.addItem("")
         self.verticalLayout.addWidget(self.fluid_box)
         spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem1)
@@ -59,6 +60,7 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.force_lbl.setText(_translate("MainWindow", "0.0 N"))
-        self.fluid_box.setItemText(0, _translate("MainWindow", "Water"))
-        self.fluid_box.setItemText(1, _translate("MainWindow", "Myster Fluid"))
+        self.fluid_box.setItemText(0, _translate("MainWindow", "Air"))
+        self.fluid_box.setItemText(1, _translate("MainWindow", "Water"))
+        self.fluid_box.setItemText(2, _translate("MainWindow", "Myster Fluid"))
 

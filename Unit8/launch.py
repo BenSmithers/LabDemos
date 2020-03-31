@@ -8,12 +8,25 @@ from PyQt5.QtWidgets import QMainWindow, QWidget, QApplication
 from numpy import log10, pi
 from math import sqrt
 
-import os
-import sys 
+import os 
+import sys # used by hacky hacky
+
+# hacky way to import these libs from the parent library
+# without having to make this an actual module and fuss around with setting the path variable
 sys.path.append(os.path.join(os.path.dirname(__file__),'..'))
 from tools import clicker_control, basic_tool 
 
+"""
+A data-taking and visualization tool for UTA's unit 8
+
+Uses my GUI/scene interface code from MultiHex
+https://github.com/BenSmithers/MultiHex
+"""
+
 class Dimensions:
+    """
+    Object to contain the dimensions of masses. This implements a little function to get a partial integral over the volume (so you can get displacement)
+    """
     def __init__(self, dy):
         assert( isinstance(dy,float) or isinstance( dy, int) )
         self.dy = dy
@@ -32,6 +45,9 @@ class Dimensions:
 
 
 class Cylinder(Dimensions):
+    """
+    Implements cylindrical dimensions
+    """
     def __init__(self, width, dy=1.0):
         Dimensions.__init__(self, dy)
         assert( isinstance(width, float) or isinstance(width, int))
@@ -40,6 +56,9 @@ class Cylinder(Dimensions):
 
 
     def get_integral(self, y):
+        """
+        Just the volume of a cylinder 
+        """
         if y<0:
             return 0
         elif y<=self.dy:
@@ -52,6 +71,9 @@ class Cylinder(Dimensions):
         return self.get_integral(self.dy)
 
 class Irregular(Dimensions):
+    """
+    Implements an irregularly shaped object 
+    """
     def __init__(self, width, dy=1.0):
         Dimensions.__init__(self, dy)
         assert( isinstance(width, float) or isinstance(width, int))
@@ -60,6 +82,11 @@ class Irregular(Dimensions):
 
 
     def get_integral(self, y):
+        """
+        This was wholly unnecessary.
+
+        It's supposed to be two tubes connected by a truncated cone... "irregular"
+        """
         if y<0:
             return 0
         elif y<0.3*self.dy:
@@ -78,6 +105,11 @@ class Irregular(Dimensions):
         return self.get_integral(self.dy)
 
 class Mass:
+    """
+    Class for the objects we're moving around. 
+
+    These have mass, dimension, a location, and a color 
+    """
     def __init__(self, mass, x,y, color, dimension):
         assert( isinstance( mass,int) or isinstance(mass,float))
         assert( isinstance( x,int) or isinstance(x,float))
@@ -98,6 +130,9 @@ class Mass:
         self.dimensions = dimension
 
     def get_submerged_volume(self, waterlevel):
+        """
+        Gets amount of fluid displaced based on the masses height and dimensions. Note: volume in scaled coordinates 
+        """
         assert(isinstance(waterlevel, float) or isinstance(waterlevel, int))
 
         if (self.y+self.dimensions.dy) < waterlevel:
@@ -118,6 +153,9 @@ class Mass:
         return(self._y)
 
 class new_tool(basic_tool):
+    """
+    Clicker Control interface for moving the masses around, drawing the masses, and getting the apparent force they apply 
+    """
     def __init__(self, parent):
         basic_tool.__init__(self, parent)
         self.parent = parent 
@@ -149,10 +187,10 @@ class new_tool(basic_tool):
         for obj in self.parent.masses:
             if abs(self.parent.masses[obj].x - here[0])<10.0 and abs(self.parent.masses[obj].y - here[1])<10.0:
                 self.selected = obj
-                break
+                return
 
-        if self.selected is None:
-            self.parent.ui.force_lbl.setText("0.0 N")
+        self.selected = None
+        self.parent.ui.force_lbl.setText("0.0 N")
 
     def draw(self, which):
         if which in self.drawn:
@@ -170,6 +208,7 @@ class new_tool(basic_tool):
         self.pen.setColor(QtGui.QColor(obj.color[0], obj.color[1], obj.color[2]))
         self.brush.setColor(QtGui.QColor(obj.color[0], obj.color[1], obj.color[2]))
 
+        # hacky way to draw the cylinders and irregularly shaped thing 
         if isinstance(obj.dimensions, Cylinder):
             points = [ None for i in range(4) ]
             points[0]= QtCore.QPointF(obj.x-0.5*obj.dimensions.width,obj.y)     
@@ -177,7 +216,6 @@ class new_tool(basic_tool):
             points[2]= QtCore.QPointF(obj.x+0.5*obj.dimensions.width, obj.y+obj.dimensions.dy) 
             points[3]= QtCore.QPointF(obj.x+0.5*obj.dimensions.width, obj.y)
 
-           
         else:
             points = [ None for i in range(8) ]
             points[0]= QtCore.QPointF(obj.x-0.5*obj.dimensions.width,obj.y)
@@ -191,6 +229,7 @@ class new_tool(basic_tool):
 
         self.drawn[which] = self.parent.scene.addPolygon( QtGui.QPolygonF( points ), pen=self.pen, brush=self.brush)
         self.drawn[which].setZValue(10)
+
 class main_window(QMainWindow):
     """
     Datatype for the application itself 
@@ -212,9 +251,10 @@ class main_window(QMainWindow):
         self.pen = QtGui.QPen()
         self.brush = QtGui.QBrush()
 
-        self.waterlevel = 500.
+        self.waterlevel = 500. # y-level to draw the fluid (goo)
 
-        self.scale_factor = 1000.
+        self.scale_factor = 1000. # so that the objects aren't really really really tiny 
+        # scale factor is px/meter 
         basic =Cylinder(self.scale_factor*0.0255,self.scale_factor*0.0446)
         weird = Irregular(self.scale_factor*0.0255,self.scale_factor*0.0446)
 
@@ -230,6 +270,7 @@ class main_window(QMainWindow):
         self.drawn_water = None
         self.drawn_bowl = None
 
+        self.combo_index_change()
         self.draw_waterline()
 
         self.ui.fluid_box.currentIndexChanged.connect( self.combo_index_change )
@@ -239,6 +280,9 @@ class main_window(QMainWindow):
 
 
     def draw_waterline(self):
+        """
+        Draws both the cup and the water (or goo)
+        """
         # draw a line to contain the water
         self.pen.setWidth(5)
         self.pen.setColor(QtGui.QColor(0,0,0))
@@ -270,11 +314,17 @@ class main_window(QMainWindow):
 
 
     def combo_index_change(self):
+        """
+        Called when the user checks a new option in the drop-down menu 
+        """
         this_sub = self.ui.fluid_box.currentText()
 
         if this_sub == "Water":
             self.water_density = 1000.
             self.water_color = (66, 135, 245)
+        elif this_sub == "Air":
+            self.water_density = 0.
+            self.water_color = (255, 255, 255)
         else:
             self.water_density = 1234.
             self.water_color = (103, 191, 137)
