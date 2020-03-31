@@ -3,13 +3,16 @@
 from lab_ui import Ui_MainWindow as gui
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import QMainWindow, QWidget, QApplication
-import sys 
+
 
 from numpy import log10
 from math import sqrt
 
-
+import os
+import sys 
+sys.path.append(os.path.join(os.path.dirname(__file__),'..'))
 from tools import clicker_control, basic_tool 
+
 class Hand(basic_tool):
     """
     This is an object that the clicker_control sends its events to. It receives filtered input form the mouse, and manipulates objects and the GUI accordingly 
